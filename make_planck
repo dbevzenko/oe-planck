@@ -1,0 +1,44 @@
+#! /bin/bash -
+
+# Script for copying source files into qmk_firmware source 
+# tree and running make 
+
+# Usage make_plank [source_path] [qmk_path] 
+
+source_path="."
+qmk_path=$HOME/src/qmk_firmware
+
+if [ "$#" -eq 1 ]; then
+    source_path=$1
+fi
+
+if [ "$#" -eq 2 ]; then
+    qmk_path=$2
+fi
+
+echo "Making Planck source from: $source_path"
+echo "Qmk directory: $qmk_path"
+
+keymaps_path="$qmk_path"/keyboards/planck/keymaps
+
+if [ ! -d "$keymaps_path" ]; then
+    echo "Planck keymaps directory is not found in $qmk_path"
+    echo "Please clone from https://github.com/qmk/qmk_firmware.git"
+    exit 1
+fi
+
+layout=planck_$(mktemp -u | tr -d '/tmp.')
+tmpdir="$keymaps_path/$layout"
+
+echo $layout 
+
+mkdir -p -v "$tmpdir"
+cp -v "$source_path"/keymap.c "$tmpdir"
+cp -v "$source_path"/rules.mk "$tmpdir"
+
+cd $qmk_path
+echo $(pwd)
+
+make planck/rev4:"$layout"
+
+rm -r -v $tmpdir
