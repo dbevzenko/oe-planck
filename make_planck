@@ -30,14 +30,11 @@ fi
 layout=planck_$(mktemp -u | tr -d '/tmp.')
 tmpdir="$keymaps_path/$layout"
 
-echo $layout 
-
 mkdir -p -v "$tmpdir"
 cp -v "$source_path"/keymap.c "$tmpdir"
 cp -v "$source_path"/rules.mk "$tmpdir"
 
 cd $qmk_path
-echo $(pwd)
 
 make planck/rev4:"$layout"
 
